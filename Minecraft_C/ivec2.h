@@ -139,8 +139,8 @@ void glm_ivec2_subs(ivec2 v, int s, ivec2 dest) {
 /*
 * multiply two vector (아다마르 곱)
 *
-* v		vector
-* s		scalar
+* a		vector 1
+* b		vector 2
 * dest	destination vector
 */
 CGLM_INLINE
@@ -178,8 +178,8 @@ void glm_ivec2_div(ivec2 a, ivec2 b, ivec2 dest) {
 /*
 * div vector with scalar
 *
-* a		vector 1
-* b		vector 2
+* v		vector
+* s		scalar
 * dest	destination vector
 */
 CGLM_INLINE
