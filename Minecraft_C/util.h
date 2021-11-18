@@ -22,7 +22,9 @@
 #include "ivec3s.h"
 
 #include "fmath.h"
-
+#include "time.h"
+#include "direction.h"
+#include "types.h"
 
 
 #endif
