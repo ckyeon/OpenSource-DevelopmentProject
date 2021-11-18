@@ -21,6 +21,8 @@
 #include "ivec3.h"
 #include "ivec3s.h"
 
+#include "fmath.h"
+
 
 
 #endif
