@@ -13,20 +13,28 @@
 * cglm 구조체 선언법
 * ref: https://github.com/recp/cglm/blob/master/include/cglm/types-struct.h
 */
-typedef union ivec2s {
-  ivec2 raw;
-#if CGLM_USE_ANONYMOUS_STRUCT	// 익명 구조체인 경우
-  struct {
-    int x;
-    int y;
-  };
+typedef union ivec2s
+{
+	ivec2 raw;
+#if CGLM_USE_ANONYMOUS_STRUCT // 익명 구조체인 경우
+	struct
+	{
+		int x;
+		int y;
+	};
 #endif
 } ivec2s;
 
-#define GLMS_IVEC2_ONE_INIT   {GLM_IVEC2_ONE_INIT}
-#define GLMS_IVEC2_ZERO_INIT  {GLM_IVEC2_ZERO_INIT}
+#define GLMS_IVEC2_ONE_INIT \
+	{                       \
+		GLM_IVEC2_ONE_INIT  \
+	}
+#define GLMS_IVEC2_ZERO_INIT \
+	{                        \
+		GLM_IVEC2_ZERO_INIT  \
+	}
 
-#define GLMS_IVEC2_ONE  ((ivec2s)GLMS_IVEC2_ONE_INIT)
+#define GLMS_IVEC2_ONE ((ivec2s)GLMS_IVEC2_ONE_INIT)
 #define GLMS_IVEC2_ZERO ((ivec2s)GLMS_IVEC2_ZERO_INIT)
 
 /*
@@ -37,10 +45,12 @@ typedef union ivec2s {
 * len	number of elements
 */
 CGLM_INLINE
-void glms_ivec2_pack(ivec2s dst[], ivec2 src[], size_t len) {
+void glms_ivec2_pack(ivec2s dst[], ivec2 src[], size_t len)
+{
 	size_t i;
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++)
+	{
 		glm_ivec2_copy(src[i], dst[i].raw);
 	}
 }
@@ -53,10 +63,12 @@ void glms_ivec2_pack(ivec2s dst[], ivec2 src[], size_t len) {
 * len	number of elements
 */
 CGLM_INLINE
-void glms_ivec2_unpack(ivec2 dst[], ivec2s src[], size_t len) {
+void glms_ivec2_unpack(ivec2 dst[], ivec2s src[], size_t len)
+{
 	size_t i;
 
-	for (i = 0; i < len; i++) {
+	for (i = 0; i < len; i++)
+	{
 		glm_ivec2_copy(src[i].raw, dst[i]);
 	}
 }
@@ -67,7 +79,8 @@ void glms_ivec2_unpack(ivec2 dst[], ivec2s src[], size_t len) {
 * return zero vector
 */
 CGLM_INLINE
-ivec2s glms_ivec2_zero(void) {
+ivec2s glms_ivec2_zero(void)
+{
 	ivec2s r;
 	glm_ivec2_zero(r.raw);
 	return r;
@@ -79,7 +92,8 @@ ivec2s glms_ivec2_zero(void) {
 * return one vecotr
 */
 CGLM_INLINE
-ivec2s glms_ivec2_one(void) {
+ivec2s glms_ivec2_one(void)
+{
 	ivec2s r;
 	glm_ivec2_one(r.raw);
 	return r;
@@ -94,7 +108,8 @@ ivec2s glms_ivec2_one(void) {
 * return dot product
 */
 CGLM_INLINE
-int glms_ivec2_dot(ivec2s a, ivec2s b) {
+int glms_ivec2_dot(ivec2s a, ivec2s b)
+{
 	return glm_ivec2_dot(a.raw, b.raw);
 }
 
@@ -107,7 +122,8 @@ int glms_ivec2_dot(ivec2s a, ivec2s b) {
 * return corss product
 */
 CGLM_INLINE
-int glms_ivec2_cross(ivec2s a, ivec2s b) {
+int glms_ivec2_cross(ivec2s a, ivec2s b)
+{
 	return glm_ivec2_cross(a.raw, b.raw);
 }
 
@@ -120,7 +136,8 @@ int glms_ivec2_cross(ivec2s a, ivec2s b) {
 * return	r = (a[0] + b[0], a[1] + b[1])
 */
 CGLM_INLINE
-ivec2s glms_ivec2_add(ivec2s a, ivec2s b) {
+ivec2s glms_ivec2_add(ivec2s a, ivec2s b)
+{
 	ivec2s r;
 	glm_ivec2_add(a.raw, b.raw, r.raw);
 	return r;
@@ -135,7 +152,8 @@ ivec2s glms_ivec2_add(ivec2s a, ivec2s b) {
 * return	r = (a[0] + s, a[1] + s)
 */
 CGLM_INLINE
-ivec2s glms_ivec2_adds(ivec2s v, int s) {
+ivec2s glms_ivec2_adds(ivec2s v, int s)
+{
 	ivec2s r;
 	glm_ivec2_adds(v.raw, s, r.raw);
 	return r;
@@ -150,7 +168,8 @@ ivec2s glms_ivec2_adds(ivec2s v, int s) {
 * return	r = (a[0] - b[0], a[1] - b[1])
 */
 CGLM_INLINE
-ivec2s glms_ivec2_sub(ivec2s a, ivec2s b) {
+ivec2s glms_ivec2_sub(ivec2s a, ivec2s b)
+{
 	ivec2s r;
 	glm_ivec2_sub(a.raw, b.raw, r.raw);
 	return r;
@@ -165,7 +184,8 @@ ivec2s glms_ivec2_sub(ivec2s a, ivec2s b) {
 * return	r = (a[0] - s, a[1] - s)
 */
 CGLM_INLINE
-ivec2s glms_ivec2_subs(ivec2s v, int s) {
+ivec2s glms_ivec2_subs(ivec2s v, int s)
+{
 	ivec2s r;
 	glm_ivec2_subs(v.raw, s, r.raw);
 	return r;
@@ -180,7 +200,8 @@ ivec2s glms_ivec2_subs(ivec2s v, int s) {
 * return	r = (a[0] * b[0], a[1] * b[1])
 */
 CGLM_INLINE
-ivec2s glms_ivec2_mul(ivec2s a, ivec2s b) {
+ivec2s glms_ivec2_mul(ivec2s a, ivec2s b)
+{
 	ivec2s r;
 	glm_ivec2_mul(a.raw, b.raw, r.raw);
 	return r;
@@ -195,7 +216,8 @@ ivec2s glms_ivec2_mul(ivec2s a, ivec2s b) {
 * return	r = (a[0] * s, a[1] * s)
 */
 CGLM_INLINE
-ivec2s glms_ivec2_scale(ivec2s v, int s) {
+ivec2s glms_ivec2_scale(ivec2s v, int s)
+{
 	ivec2s r;
 	glm_ivec2_scale(v.raw, s, r.raw);
 	return r;
@@ -210,7 +232,8 @@ ivec2s glms_ivec2_scale(ivec2s v, int s) {
 * return	r = (a[0] / b[0], a[1] / b[1])
 */
 CGLM_INLINE
-ivec2s glms_ivec2_div(ivec2s a, ivec2s b) {
+ivec2s glms_ivec2_div(ivec2s a, ivec2s b)
+{
 	ivec2s r;
 	glm_ivec2_div(a.raw, b.raw, r.raw);
 	return r;
@@ -224,7 +247,8 @@ ivec2s glms_ivec2_div(ivec2s a, ivec2s b) {
 * return	r = (a[0] / s, a[1] / s, a[2] / s)
 */
 CGLM_INLINE
-ivec2s glms_ivec2_divs(ivec2s v, int s) {
+ivec2s glms_ivec2_divs(ivec2s v, int s)
+{
 	ivec2s r;
 	glm_ivec2_divs(v.raw, s, r.raw);
 	return r;

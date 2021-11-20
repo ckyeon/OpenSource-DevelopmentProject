@@ -40,14 +40,14 @@ static vec3s intbound(vec3s s, vec3s ds)
 }
 
 // 레이저가 블럭과 충돌하는지 확인
-// 이 함수를 통해 블럭에 닿는지 아닌지 체크?
+// 이 함수를 통해 블럭에 닿는지 아닌지 체크
 bool ray_block(struct Ray ray, f32 max_distance, bool (*f)(ivec3s), ivec3s *out, enum Direction *d_out)
 {
 	ivec3s p, step;
 	vec3s d, tmax, tdelta;
 	f32 radius;
 
-	// 포인트로 x, y, z를 전부 정수로 만듦
+	// p(포인트)의 x, y, z를 전부 정수로 만듦
 	p = (ivec3s){{floori(ray.origin.x), floori(ray.origin.y), floori(ray.origin.z)}};
 	// 레이저의 방향
 	d = ray.direction;
