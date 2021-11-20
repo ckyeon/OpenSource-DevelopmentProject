@@ -7,6 +7,7 @@
 // Forward declaration
 struct World;
 
+// 블럭 Id
 enum BlockId
 {
     AIR = 0,

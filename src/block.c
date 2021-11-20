@@ -32,7 +32,7 @@ static bool is_liquid()
     return false;
 }
 
-// Contains all default behavior for a block
+// 블럭에 대한 기본 동착
 struct Block BLOCK_DEFAULT = {
     .id = -1,
     .is_transparent = is_transparent,
@@ -60,6 +60,7 @@ extern void clay_init();
 extern void gravel_init();
 extern void planks_init();
 
+// 전체 블럭 초기화하는 함수
 void block_init()
 {
     air_init();

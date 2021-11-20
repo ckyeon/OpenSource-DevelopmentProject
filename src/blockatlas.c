@@ -1,6 +1,8 @@
 #include "include/blockatlas.h"
 #include "include/block.h"
 
+// res/images에 있는 blocks 라는 이름의 Texture Atalas를 가져와 개별로 쓸 수 있게 지정해(잘라)주는 코드
+
 static void copy_pixels(u8 *pixels, ivec2s image_size, ivec2s size, ivec2s from, ivec2s to)
 {
     for (s32 j = 0; j < size.y; j++)

@@ -1,7 +1,9 @@
-#include <stdio.h>
+#include "include/window.h"
+#include "include/gfx.h"
 
-int main(void) {
-	int a = 10;
-
-	return 0;
-}
+#include "include/vao.h"
+#include "include/vbo.h"
+#include "include/shader.h"
+#include "include/camera.h"
+#include "include/state.h"
+#include "include/block.h"
