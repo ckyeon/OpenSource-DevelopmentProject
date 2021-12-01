@@ -7,6 +7,7 @@
 #define RAND(min, max) ((rand() % (max - min + 1)) + min)
 #define RANDCHANCE(chance) ((RAND(0, 100000) / 100000.0) <= chance)
 
+// 벡터 ||(c - v / ||r||)|| 
 #define RADIAL2I(c, r, v) \
     (glms_vec2_norm(glms_vec2_sub(IVEC2S2V((c)), IVEC2S2V((v)))) / glms_vec2_norm(IVEC2S2V((r))))
 
@@ -15,56 +16,66 @@
 
 #define WATER_LEVEL 64
 
+//  바이옴의 종류
 enum Biome
 {
-    OCEAN,
-    PLAINS,
-    BEACH,
-    MOUNTAIN
+    OCEAN,  // 바다
+    PLAINS, // 초원
+    BEACH,  // 해변
+    MOUNTAIN    // 산맥
 };
 
+// 청크 데이터를 담는 자료형
 typedef void (*FSet)(struct Chunk *, s32, s32, s32, u32);
 typedef u32 (*FGet)(struct Chunk *, s32, s32, s32);
 
+// 노이즈 데이터를 담는 자료형
 typedef f32 (*FNoise)(void *p, f32 s, f32 x, f32 z);
 
 struct Noise
 {
-    u8 params[512]; // either Octave or Combined
+    u8 params[512]; // 옥타브 or compute 된 옥타브
     FNoise compute;
 };
 
-// Octave noise with n octaves and seed offset o
-// Maximum amplitude is 2^0 + 2^1 + 2^2 ... 2^n = 2^(n+1) - 1
-// i.e. for octave 8, values range between [-511, 511]
+// n 옥타브와 오프셋 o가 있는 노이즈
+// 최대 진폭은 2^(n + 1) - 1
+// ex) 8옥타브의 경우 [-511, 511] 사이
 struct Octave
 {
     s32 n, o;
 };
 
-// Combined noise where compute(x, z) = n.compute(x + m.compute(x, z), z)
+// 합쳐진 noise
 struct Combined
 {
     struct Noise *n, *m;
 };
 
+
+// 옥타브 계산
 f32 octave_compute(struct Octave *p, f32 seed, f32 x, f32 z)
 {
     f32 u = 1.0f, v = 0.0f;
+    // 옥타브 n 만큼 반복
     for (int i = 0; i < p->n; i++)
     {
+        // 노이즈 생성
         v += noise3(x / u, z / u, seed + i + (p->o * 32)) * u;
         u *= 2.0f;
     }
     return v;
 }
 
-// 노이즈 모듈
-// -> 게임 맵을 랜덤한 지형으로 생성
+
+// 게임 맵을 랜덤한 지형으로 생성
 struct Noise octave(s32 n, s32 o)
 {
+    // 노이즈 생성 = octave_compute 함수를 호출해 compute 된 노이즈 저장
     struct Noise result = {.compute = (FNoise)octave_compute};
+    // 옥타브 파라미터 지정
     struct Octave params = {n, o};
+    // 생성된 노이즈의 parameter에 옥타브 parameter 복사
     memcpy(&result.params, &params, sizeof(struct Octave));
     return result;
 }
@@ -109,6 +120,7 @@ static void _set(struct Chunk *chunk, s32 x, s32 y, s32 z, u32 d)
     }
 }
 
+// 나무 생성
 void tree(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
 {
     enum BlockId under = get(chunk, x, y - 1, z);
@@ -166,6 +178,7 @@ void tree(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
     }
 }
 
+// 꽃 생성
 void flowers(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
 {
     enum BlockId flower = RANDCHANCE(0.6) ? ROSE : BUTTERCUP;
@@ -188,6 +201,8 @@ void flowers(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
     }
 }
 
+// Ore vein
+// 광석의 광맥을 생성
 void orevein(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z, enum BlockId block)
 {
     s32 h = RAND(1, y - 4);
@@ -233,6 +248,7 @@ void orevein(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z, enum 
     }
 }
 
+// 용암 지대
 void lavapool(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
 {
     s32 h = y - 1;
@@ -250,7 +266,7 @@ void lavapool(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
                                ((ivec2s){{l + 1, w + 1}}),
                                ((ivec2s){{xx, zz}}));
 
-            // all border blocks must be solid (or lava) to place lava
+            // 용암 주변에는 무조건 고체만 있어야 하므로 true
             bool allow = true;
 
             for (s32 i = -1; i <= 1; i++)
@@ -280,9 +296,12 @@ void lavapool(struct Chunk *chunk, FGet get, FSet set, s32 x, s32 y, s32 z)
     }
 }
 
+
+// 월드 생성
 void worldgen_generate(struct Chunk *chunk)
 {
     // TODO: configure in world.c
+    // 월드의 seed 생성
     const u64 seed = 2;
     SRAND(seed + ivec3shash(chunk->offset));
 
@@ -302,8 +321,7 @@ void worldgen_generate(struct Chunk *chunk)
         octave(8, 6),
     };
 
-    // Two separate combined noise functions, each combining two different
-    // octave noise functions
+    // 두 가지 노이즈를 합성
     struct Noise cs[] = {
         combined(&os[0], &os[1]),
         combined(&os[2], &os[3]),
@@ -316,13 +334,13 @@ void worldgen_generate(struct Chunk *chunk)
         {
             s32 wx = chunk->position.x + x, wz = chunk->position.z + z;
 
-            // Sample each combined noise function for high/low results
+            // 각각 높고 낮은 노이즈를 얻기 위해 compute된 노이즈 샘플링
             const f32 base_scale = 1.3f;
             int hr;
             int hl = (cs[0].compute(&cs[0].params, seed, wx * base_scale, wz * base_scale) / 6.0f) - 4.0f;
             int hh = (cs[1].compute(&cs[1].params, seed, wx * base_scale, wz * base_scale) / 5.0f) + 6.0f;
 
-            // Sample the biome noise and extra noise
+            // biome 노이즈와 추가적인 노이즈 샘플링
             f32 t = n.compute(&n.params, seed, wx, wz);
             f32 r = m.compute(&m.params, seed, wx / 4.0f, wz / 4.0f) / 32.0f;
 
@@ -335,15 +353,17 @@ void worldgen_generate(struct Chunk *chunk)
                 hr = max(hh, hl);
             }
 
-            // offset by water level and determine biome
+            // 물 보다 높게 biome 생성
             s32 h = hr + WATER_LEVEL;
 
             // beach is anything close-ish to water in biome AND height
             enum Biome biome;
+            // 수위보다 낮으면 OCEAN
             if (h < WATER_LEVEL)
             {
                 biome = OCEAN;
             }
+            // 수위보다 높고, 0.08f보다 가까우면 해변
             else if (t < 0.08f && h < WATER_LEVEL + 2)
             {
                 biome = BEACH;
@@ -362,7 +382,7 @@ void worldgen_generate(struct Chunk *chunk)
                 h += (r + (-t / 12.0f)) * 2 + 2;
             }
 
-            // dirt or sand depth
+            // 흙이나 모래 깊이
             s32 d = r * 1.4f + 5.0f;
 
             enum BlockId top_block;
@@ -434,7 +454,7 @@ void worldgen_generate(struct Chunk *chunk)
                 chunk_set_data(chunk, (ivec3s){{x, y, z}}, block);
             }
 
-            // fill up to water level with water
+            // 수위까지 물을 채운다
             for (s32 y = h; y < WATER_LEVEL; y++)
             {
                 chunk_set_data(chunk, (ivec3s){{x, y, z}}, WATER);
@@ -467,7 +487,7 @@ void worldgen_generate(struct Chunk *chunk)
         }
     }
 
-    // set data in this chunk which was previously unloaded
+    // 언로드 된 청크
     for (size_t i = 0; i < chunk->world->unloaded_data.size; i++)
     {
         struct WorldUnloadedData data = chunk->world->unloaded_data.list[i];

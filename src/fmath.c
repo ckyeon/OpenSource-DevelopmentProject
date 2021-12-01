@@ -41,6 +41,13 @@ static vec3s intbound(vec3s s, vec3s ds)
 
 // 레이저가 블럭과 충돌하는지 확인
 // 이 함수를 통해 블럭에 닿는지 아닌지 체크
+// ray = 레이저
+// max_distance = 최대 사거리
+// (*f)(ivec3s) = 블럭이 좌표에 있는지 아닌지 여부
+// *out = 블럭을 바라보고 있는지 아닌지
+
+// DDA 알고리즘
+// ref: https://365kim.tistory.com/44
 bool ray_block(struct Ray ray, f32 max_distance, bool (*f)(ivec3s), ivec3s *out, enum Direction *d_out)
 {
 	ivec3s p, step;

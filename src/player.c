@@ -1,10 +1,12 @@
 #include "include/player.h"
 #include "include/state.h"
 
+// 플레이어 초기화
 void player_init(struct EntityPlayer *self, struct World *world)
 {
     memset(self, 0, sizeof(struct EntityPlayer));
     self->world = world;
+    // 카메라 생성
     self->camera = camera_create(radians(75.0f));
 }
 
@@ -81,16 +83,19 @@ void player_tick(struct EntityPlayer *self)
     forward = (vec3s){{sinf(self->camera.yaw), 0, cosf(self->camera.yaw)}};
     right = glms_vec3_cross((vec3s){{0.0f, 1.0f, 0.0f}}, forward);
 
+    // w를 입력 받으면 forward 만큼 add
     if (state.window->keyboard.keys[GLFW_KEY_W].down)
     {
         direction = glms_vec3_add(direction, forward);
     }
 
+    // s를 입력 받으면 forward 만큼 sub
     if (state.window->keyboard.keys[GLFW_KEY_S].down)
     {
         direction = glms_vec3_sub(direction, forward);
     }
-
+    
+    //
     if (state.window->keyboard.keys[GLFW_KEY_A].down)
     {
         direction = glms_vec3_add(direction, right);
@@ -111,6 +116,7 @@ void player_tick(struct EntityPlayer *self)
         direction = glms_vec3_sub(direction, (vec3s){{0.0f, 1.0f, 0.0f}});
     }
 
+
     if (isnan(glms_vec3_norm(direction)))
     {
         movement = GLMS_VEC3_ZERO;
@@ -122,14 +128,17 @@ void player_tick(struct EntityPlayer *self)
         movement = glms_vec3_scale(movement, speed);
     }
 
+    // 플레이어의 움직임에 맞춰 camera position 변경
     self->camera.position = glms_vec3_add(self->camera.position, movement);
 
+    // 블럭 사거리가 닿는지 체크
     // update look at block
     const f32 reach = 6.0f;
     self->has_look_block = ray_block(
         (struct Ray){.origin = self->camera.position, .direction = self->camera.direction},
         reach, raycast_block_fn, &self->look_block, &self->look_face);
 
+    // 사거리가 닿으면 오른쪽 클릭 시 블럭 파괴
     // place/destroy blocks
     if (self->has_look_block)
     {
